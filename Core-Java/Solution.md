@@ -281,3 +281,244 @@ public class CurrencyExchange{
     }
 }
 ```
+
+# Collection
+
+## 1) (Set)Find true friends: Given two arraylists containing friend names, find the true friends that appear in both list.
+```java
+import java.util.*;
+import java.util.stream.Collectors;
+class Main {  
+  public static void main(String args[]) { 
+    List<String> friends1 = Arrays.asList("Jack", "Pony", "Elon", "Bill", "Jeff");
+    List<String> friends2 = Arrays.asList("Tom", "Jack", "Alice", "Bob", "Jeff");
+    List<String> common = friends1.stream().filter(f -> friends2.contains(f)).collect(Collectors.toList());
+    for (var ele: common) {
+        System.out.println(ele);
+    }
+  } 
+}
+```
+
+## 2) (Map)Given a string, output duplicate characters and their counts
+```java
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+import java.util.stream.Collectors;
+
+
+class Main {  
+  public static void main(String args[]) { 
+    String chars = "sdflkjsdlkszkijc";
+    Map<String, Integer> map = Arrays.asList(chars.split("")).stream().collect(Collectors.groupingBy(e -> e, Collectors.summingInt(e -> 1)));
+    for (Map.Entry<String, Integer> ele: map.entrySet()) {
+        System.out.print(ele.getKey());
+        System.out.print(": ");
+        System.out.println(ele.getValue());
+    }
+  } 
+}
+```
+
+# Exception Handling
+
+## 1) Define two exceptions “CardTypeException” and “AddressException”. Create a separate class “ExceptionHandler” which contains one method “handleException”. The method takes input of cardType and address. If cardType is “AMEX”, throw CardTypeException. If address is outside US, return AddressException, for other errors, just return generic exception. Your exception should be caught and you should display message to tell which exception is returned.
+
+```java
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+import java.util.stream.Collectors;
+
+
+class CardTypeException extends Exception {
+  CardTypeException(String msg) {
+    super(msg);
+  }
+}
+
+class AddressException extends Exception {
+  AddressException(String msg) {
+    super(msg);
+  }
+}
+
+class ExceptionHandler {
+  public static void handleException(String cardType, String address) {
+    try {
+      if (cardType == "AMEX") {
+        throw new CardTypeException("Amex card is not allowed...");
+      }
+      if (address != "US") {
+        throw new AddressException("Addresses out side of US is not allowed...");
+      }
+      System.out.println("Executed without error.");
+    } catch (CardTypeException e) {
+      System.out.println(e);
+    } catch (AddressException e) {
+      System.out.println(e);
+    }
+  }
+}
+
+class Main {  
+  public static void main(String args[]) { 
+    ExceptionHandler.handleException("AMEX", "AA");
+  } 
+}
+```
+
+# ExecutorService
+
+## 1) Define a inner class A has method “getMethod()” which return string “A.getMethod” and another inner class B has method “getMethod()” which return string “B.getMethod”. write another method “runSameTime()” which should let A and B getMethod to run at the same time, but the “runSameTime()” method should return a string “B.getMethod A.getMethod”
+
+```java
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+import java.util.stream.Collectors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future<V>;
+
+
+class Main { 
+  public class A {
+    public String getMethod() {
+      return "A.getMethod";
+    }
+  } 
+
+  public class B {
+    public String getMethod() {
+      return "B.getMethod";
+    }
+  } 
+
+  public static String runSameTime() {
+    ExecutorService es = Executors.newCachedThreadPool(2);
+    try {
+      Future<String> futureA = es.submit(() -> new A().getMethod());
+      Future<String> futureB = es.submit(() -> new B().getMethod());
+
+      boolean isAllDone = false;
+      while (!isAllDone) {
+        if (futureA.isDone() && futureB.isDone()) {
+          return futureB.get() + futureA.get();
+          isAllDone = true;
+        }
+      }
+    } catch (Exception e) {
+      System.out.println(e);
+    } finally {
+      es.shutdown();
+    }
+  }
+
+  public static void main(String args[]) { 
+    String r = runSameTime();
+    System.out.println(r);
+  } 
+}
+```
+
+# Java 8
+
+## 1) Define an interface “CreditCard” which contains fields (holderName, cardNumber, accountBalance, cardType), and not-implemented method “isCardAcceptable” with argument cardType. Define two classes “VisaCard” and “MasterCard” both should inherit this “CreditCard” interface and you should define constructor for both classes and implement the “isCardAcceptable” method. Now Add a default method “payBill(double bill)” and static method “refund(double amount)” to the interface. Verify that VisaCard and MasterCard class can read these two methods (use Main method to verify).
+```java
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+import java.util.stream.Collectors;
+
+interface CreditCard {
+  public boolean isCardAcceptable(String cardType);
+  public default payBill()
+}
+
+class VisaCard implements CreditCard {
+  String holderName;
+  String cardNumber;
+  String accountBalance;
+  String cardType = "visa";
+  CreditCard(String holderName, String cardNumber, String accountBalance) {
+    this.holderName = holderName;
+    this.cardNumber = cardNumber;
+    this.accountBalance = accountBalance;
+  }
+  @Override
+  public boolean isCardAcceptable(String cardType) {
+    if(this.cardType == cardType) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
+
+class MasterCard implements CreditCard {
+  String holderName;
+  String cardNumber;
+  String accountBalance;
+  String cardType = "master";
+  CreditCard(String holderName, String cardNumber, String accountBalance) {
+    this.holderName = holderName;
+    this.cardNumber = cardNumber;
+    this.accountBalance = accountBalance;
+  }
+  @Override
+  public boolean isCardAcceptable(String cardType) {
+    if(this.cardType == cardType) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
+
+class Main {  
+  public static void main(String args[]) { 
+    ExceptionHandler.handleException("AMEX", "AA");
+  } 
+}
+```
+
+## 2) "walabcwalexywalxzsfwalmx”  -- replace "wal" with "sams"
+```java
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+import java.util.stream.Collectors;
+
+
+class Main {  
+  public static void main(String args[]) { 
+    String chars = "walabcwalexywalxzsfwalmx";
+    String repl = Arrays.asList(chars.split("(?i)wal")).stream().collect(Collectors.joining("sam"));
+    System.out.println(repl);
+  } 
+}
+```
+
+## 3) "Eclipse eclipse Eclipse eclipse amc clip ECLIPSE" – count the occurrence of each unique word (ignore case), return result as a map. For example (eclipse->5, amc->1, clip->1)
+
+```java
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+import java.util.stream.Collectors;
+
+
+class Main {  
+  public static void main(String args[]) { 
+    String chars = "Eclipse eclipse Eclipse eclipse amc clip ECLIPSE";
+    Map<String, Integer> map = Arrays.asList(chars.toLowerCase().split(" ")).stream().collect(Collectors.groupingBy(e -> e, Collectors.summingInt(e -> 1)));
+    for (Map.Entry<String, Integer> ele : map.entrySet()) {
+      System.out.print(ele.getKey());
+      System.out.print(" -> ");
+      System.out.println(ele.getValue());
+    }
+  } 
+}
+```
+
